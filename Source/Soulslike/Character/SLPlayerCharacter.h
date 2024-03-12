@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Interface/SLAnimationAttackInterface.h"
 #include "SLPlayerCharacter.generated.h"
 
 UCLASS()
-class SOULSLIKE_API ASLPlayerCharacter : public ACharacter
+class SOULSLIKE_API ASLPlayerCharacter : public ACharacter, public ISLAnimationAttackInterface
 {
 	GENERATED_BODY()
 
@@ -86,4 +87,19 @@ protected:
 	int32 CurrentCombo = 0;
 	FTimerHandle ComboTimerHandle;
 	bool HasNextComboCommand = false;
+
+	// Attack Hit Section
+protected:
+	virtual void AttackHitCheck() override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	// Dead Section
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> DeadMontage;
+
+	virtual void SetDead();
+	void PlayDeadAnimation();
+
+	float DeadEventDelayTime = 5.0f;
 };
